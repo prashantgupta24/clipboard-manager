@@ -1,40 +1,50 @@
-from tkinter import *
+from tkinter import Tk, Frame, Button, BOTH
 import time
 from threading import Thread
 
-def updateClipboard(T, root, clipboardContent):
+def onClick(root, cliptext):
+    print("copied ", cliptext)
+    root.clipboard_clear()
+    root.clipboard_append(cliptext)
+
+def updateClipboard(root, clipboardContent, f):
+
+    truncateButtonLength = 30
+    maxClippings = 10
+
     while True:
+        allButtons = [button for button in f.children.values()]
+        #print("buttons are ", len(allButtons))
+        time.sleep(0.1)
+        cliptextShort = cliptext = root.clipboard_get()
 
-
-        time.sleep(0.5)
-
-        cliptext = root.clipboard_get()
+        if len(cliptext) > truncateButtonLength:
+            cliptextShort = cliptext[:truncateButtonLength]+" ..."
         #print("in loop")
         if cliptext not in clipboardContent:
             clipboardContent.add(cliptext)
-            T.insert(END, cliptext + "\n")
-            T.pack()
+
+            if len(allButtons) == maxClippings:
+                #print("destroying first button!")
+                allButtons[0].destroy()
+
+            b = Button(f, text=cliptextShort, cursor="plus", wraplength=100, command=lambda cliptext=cliptext: onClick(root, cliptext))
+            b.pack(fill=BOTH)
             root.lift()
 
 def startMain():
-
     clipboardContent = set()
 
     root = Tk()
+    root.title("My clipboard")
 
-    T = Text(root)
-    t = Thread(target=updateClipboard, args=(T, root, clipboardContent))
+    f = Frame(root, height=500, width=500)
+    f.pack_propagate(0) # don't shrink
+    f.pack()
+
+    t = Thread(target=updateClipboard, args=(root, clipboardContent, f))
     t.start()
     root.mainloop()
-# def callback(event):
-#     print("clicked at", event.x, event.y)
-#
-# def key(event):
-#     print("pressed", repr(event.char))
-#
-# frame = Frame(root, width=200, height=200)
-# frame.bind("<Key>", key)
-# frame.bind("<Button-1>", callback)
-# frame.pack()
+
 if __name__ == '__main__':
     startMain()
