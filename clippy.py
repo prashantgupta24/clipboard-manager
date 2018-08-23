@@ -1,59 +1,66 @@
-from tkinter import Tk, Frame, Button, BOTH, Widget
-import time
-from threading import Thread
+from tkinter import Tk, Frame, Button, BOTH
 
-def onClick(root, cliptext):
-    #print("copied ", cliptext)
-    root.clipboard_clear()
-    root.clipboard_append(cliptext)
+class Clippy(Frame):
+    def __init__(self, parent=None):
+        Frame.__init__(self, parent, height=500, width=500)
+        self.pack_propagate(0)
+        self.pack()
 
-def updateClipboard(root, clipboardContent, f):
+        #self.parent = parent
+        self.clipboardContent = set()
+        self.pollingFrequencyMs = 100
+        self.truncateTextLength = 30
+        self.maxClippingsOnApp = 10
+        self.debug = False
 
-    truncateTextLength = 30
-    maxClippings = 10
+        self.updateClipboard()
 
-    while True:
-        allButtons = [button for button in f.children.values()]
-        #print("buttons are ", len(allButtons))
-        time.sleep(0.1)
-        cliptext = root.clipboard_get()
+    def updateClipboard(self):
 
+        cliptext = self.clipboard_get()
+
+        #Handle empty clipboard content
+        if not cliptext:
+            return
+
+        #Removing all characters > 65535 (that's the range for tkinter)
         cliptext = "".join([c for c in cliptext if ord(c) <= 65535])
 
-        if not cliptext:
-            continue
-
-        if len(cliptext) > truncateTextLength:
-            cliptextShort = cliptext[:truncateTextLength]+" ..."
+        #Clipping content to loop pretty
+        if len(cliptext) > self.truncateTextLength:
+            cliptextShort = cliptext[:self.truncateTextLength]+" ..."
         else:
             cliptextShort = cliptext
-        #print("in loop")
-        if cliptext not in clipboardContent:
-            clipboardContent.add(cliptext)
-            # print(cliptext)
-            # print([ord(x) for x in cliptext])
 
-            if len(allButtons) == maxClippings:
-                #print("destroying first button!")
+        #Updating screen if new content found
+        if cliptext not in self.clipboardContent:
+            self.clipboardContent.add(cliptext)
+
+            if self.debug:
+                print(cliptext)
+                print([ord(x) for x in cliptext])
+
+            #Removing the oldest entry
+            allButtons = [button for button in self.children.values()]
+            if len(allButtons) == self.maxClippingsOnApp:
                 allButtons[0].destroy()
 
-            b = Button(f, text=cliptextShort, cursor="plus", wraplength=100, command=lambda cliptext=cliptext: onClick(root, cliptext))
+            b = Button(self, text=cliptextShort, cursor="plus", wraplength=100, command=lambda cliptext=cliptext: self.onClick(cliptext))
             b.pack(fill=BOTH)
-            root.lift()
+            #self.parent.lift()
 
-def startMain():
-    clipboardContent = set()
+        self.after(ms=self.pollingFrequencyMs, func=self.updateClipboard)
 
-    root = Tk()
-    root.title("Clippy")
+    def onClick(self, cliptext):
+        if self.debug:
+            print("copied ", cliptext)
 
-    f = Frame(root, height=500, width=500)
-    f.pack_propagate(0) # don't shrink
-    f.pack()
-
-    Thread(target=updateClipboard, args=(root, clipboardContent, f)).start()
-    Widget.update(root)
-    root.mainloop()
+        self.clipboard_clear()
+        self.clipboard_append(cliptext)
 
 if __name__ == '__main__':
-    startMain()
+    root = Tk()
+    root.title("Clippy")
+    #root.lift()
+    #root.attributes("-topmost", True)
+    Clippy(root).mainloop()
