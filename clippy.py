@@ -19,11 +19,12 @@ class Clippy(Frame):
         self.updateClipboard()
 
     def initMenu(self):
-        menu = Menu(self)
-        new_item = Menu(menu)
-        new_item.add_command(label='Clear all', command=self.clearAllButtons)
-        menu.add_cascade(label='Options', menu=new_item)
-        self.parent.config(menu=menu)
+        menubar = Menu(self)
+        optionsMenu = Menu(menubar, tearoff=0)
+        optionsMenu.add_command(label="Clear all (except last)", command=self.clearAllButtons)
+        optionsMenu.add_checkbutton(label="Always on top", command=self.toggleAlwaysOnTop)
+        menubar.add_cascade(label="Options", menu=optionsMenu)
+        self.parent.config(menu=menubar)
 
     def updateClipboard(self):
 
@@ -89,6 +90,12 @@ class Clippy(Frame):
             button.destroy()
         self.clipboardContent = set()
         #self.clipboard_clear()
+
+    def toggleAlwaysOnTop(self):
+        if self.parent.attributes("-topmost") == 0:
+            self.parent.attributes("-topmost", 1)
+        else:
+            self.parent.attributes("-topmost", 0)
 
 if __name__ == '__main__':
     root = Tk()
