@@ -2,11 +2,13 @@ from tkinter import Tk, Frame, Button, BOTH
 
 class Clippy(Frame):
     def __init__(self, parent=None):
-        Frame.__init__(self, parent, height=500, width=500)
+        Frame.__init__(self, parent, height=300, width=300)
+        parent.title("Clippy")
+        parent.resizable(False, False)
         self.pack_propagate(0)
         self.pack()
 
-        #self.parent = parent
+        self.parent = parent
         self.clipboardContent = set()
         self.pollingFrequencyMs = 100
         self.truncateTextLength = 30
@@ -32,6 +34,9 @@ class Clippy(Frame):
         else:
             cliptextShort = cliptext
 
+        #Removing new lines from short text
+        cliptextShort = cliptextShort.replace("\n", "")
+
         #Updating screen if new content found
         if cliptext not in self.clipboardContent:
             self.clipboardContent.add(cliptext)
@@ -45,9 +50,14 @@ class Clippy(Frame):
             if len(allButtons) == self.maxClippingsOnApp:
                 allButtons[0].destroy()
 
-            b = Button(self, text=cliptextShort, cursor="plus", wraplength=100, command=lambda cliptext=cliptext: self.onClick(cliptext))
-            b.pack(fill=BOTH)
-            #self.parent.lift()
+            Button(self, text=cliptextShort, cursor="plus", command=lambda cliptext=cliptext: self.onClick(cliptext)).pack(fill=BOTH)
+
+            self.update()
+            self.parent.update()
+            self.pack_propagate(0)
+            self.pack()
+            self.lift()
+            self.parent.lift()
 
         self.after(ms=self.pollingFrequencyMs, func=self.updateClipboard)
 
@@ -60,7 +70,4 @@ class Clippy(Frame):
 
 if __name__ == '__main__':
     root = Tk()
-    root.title("Clippy")
-    #root.lift()
-    #root.attributes("-topmost", True)
     Clippy(root).mainloop()
