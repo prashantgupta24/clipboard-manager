@@ -3,7 +3,7 @@ from tkinter import Tk, Frame, Button, BOTH, Menu, TclError
 class Clippy(Frame):
     def __init__(self, parent=None):
         self.parent = parent
-        Frame.__init__(self, parent, height=300, width=300)
+        Frame.__init__(self, parent, height=500, width=500)
         parent.title("Clippy")
         parent.resizable(False, False)
         self.pack_propagate(0)
@@ -12,7 +12,7 @@ class Clippy(Frame):
 
         self.clipboardContent = set()
         self.pollingFrequencyMs = 100
-        self.truncateTextLength = 30
+        self.truncateTextLength = 100
         self.maxClippingsOnApp = 10
         self.debug = False
 
@@ -39,7 +39,7 @@ class Clippy(Frame):
             if cliptextShort not in self.clipboardContent:
                 self.clipboardContent.add(cliptextShort)
                 self.cleanupOldButtons()
-                Button(self, text=cliptextShort, cursor="plus", command=lambda cliptext=cliptext: self.onClick(cliptext)).pack(fill=BOTH)
+                Button(self, text=cliptextShort, cursor="plus", wraplength = 500, command=lambda cliptext=cliptext: self.onClick(cliptext)).pack(fill=BOTH)
 
                 self.update()
                 self.parent.update()
@@ -72,7 +72,7 @@ class Clippy(Frame):
         else:
             cliptextShort = cliptext
         #Removing new lines from short text
-        cliptextShort = cliptextShort.replace("\n", "")
+        cliptextShort = cliptextShort.replace("\n", "").strip()
         return (cliptext, cliptextShort)
 
     def onClick(self, cliptext):

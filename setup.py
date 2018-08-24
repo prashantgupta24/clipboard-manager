@@ -7,7 +7,7 @@ Usage:
 
 from setuptools import setup
 
-APP = ['main.py']
+APP = ['clippy.py']
 DATA_FILES = []
 OPTIONS = {}
 
