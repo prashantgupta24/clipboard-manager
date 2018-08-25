@@ -1,9 +1,9 @@
-from tkinter import Tk, Frame, Button, BOTH, Menu, TclError
+from tkinter import Tk, Frame, Button, BOTH, Menu, TclError, Label, RAISED, StringVar
 
 class Clippy(Frame):
     def __init__(self, parent=None):
         self.parent = parent
-        Frame.__init__(self, parent, height=500, width=500)
+        Frame.__init__(self, parent, height=600, width=600)
         parent.title("Clippy")
         parent.resizable(False, False)
         self.pack_propagate(0)
@@ -14,7 +14,11 @@ class Clippy(Frame):
         self.pollingFrequencyMs = 100
         self.truncateTextLength = 100
         self.maxClippingsOnApp = 10
+        self.labelArray = []
+        self.labelIterVal = 0
         self.debug = False
+
+        self.createLayout()
 
         self.updateClipboard()
 
@@ -25,6 +29,18 @@ class Clippy(Frame):
         optionsMenu.add_checkbutton(label="Always on top", command=self.toggleAlwaysOnTop)
         menubar.add_cascade(label="Options", menu=optionsMenu)
         self.parent.config(menu=menubar)
+
+    def createLayout(self):
+
+        for i in range(self.maxClippingsOnApp):
+            # var = StringVar()
+            # var.set('ddd')
+            # self.labelVar.append(var)
+            # self.var = var
+            l = Label(self, text="", cursor="plus", relief=RAISED, pady=5,  wraplength=500)
+            l.pack(fill=BOTH, padx=5, pady=2, expand=1)
+            l.bind("<Button-1>", lambda e, labelNum=i: self.onClick(labelNum))
+            self.labelArray.append(l)
 
     def updateClipboard(self):
 
@@ -38,8 +54,17 @@ class Clippy(Frame):
             #Updating screen if new content found
             if cliptextShort not in self.clipboardContent:
                 self.clipboardContent.add(cliptextShort)
-                self.cleanupOldButtons()
-                Button(self, text=cliptextShort, cursor="plus", wraplength = 500, command=lambda cliptext=cliptext: self.onClick(cliptext)).pack(fill=BOTH)
+                if self.labelIterVal == self.maxClippingsOnApp:
+                    self.labelIterVal = 0
+                #self.cleanupOldButtons()
+                #Label(self, text=cliptextShort, cursor="plus", relief=RAISED, pady=5,  wraplength=500).pack(fill=BOTH, expand=1)
+            #, command=lambda cliptext=cliptext: self.onClick(cliptext)
+
+                # var = StringVar()
+                # var.set(cliptextShort)
+                label = self.labelArray[self.labelIterVal]
+                label["text"] = cliptextShort
+                self.labelIterVal += 1
 
                 self.update()
                 self.parent.update()
@@ -75,11 +100,13 @@ class Clippy(Frame):
         cliptextShort = cliptextShort.replace("\n", "").strip()
         return (cliptext, cliptextShort)
 
-    def onClick(self, cliptext):
-        if self.debug:
-            print("copied ", cliptext)
-        self.clipboard_clear()
-        self.clipboard_append(cliptext)
+    def onClick(self, labelNum):
+        #if self.debug:
+        print(labelNum)
+        label = self.labelArray[labelNum]
+        print("copied ", label["text"])
+        # self.clipboard_clear()
+        # self.clipboard_append(cliptext)
 
     def getAllButtons(self):
         return [button for button in self.children.values() if isinstance(button, Button)]
