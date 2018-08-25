@@ -1,102 +1,50 @@
-from tkinter import Tk, Frame, Button, BOTH, Menu, TclError
+import sys
+from PyQt5.Qt import QApplication, QClipboard
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPlainTextEdit
+from PyQt5.QtCore import QSize
 
-class Clippy(Frame):
-    def __init__(self, parent=None):
-        self.parent = parent
-        Frame.__init__(self, parent, height=500, width=500)
-        parent.title("Clippy")
-        parent.resizable(False, False)
-        self.pack_propagate(0)
-        self.pack()
-        self.initMenu()
+class Clippy(QWidget):
+    def __init__(self):
+        super().__init__()
+        #self.setMinimumSize(QSize(440, 240))
+        self.setWindowTitle("Clippy")
 
-        self.clipboardContent = set()
-        self.pollingFrequencyMs = 100
-        self.truncateTextLength = 100
-        self.maxClippingsOnApp = 10
-        self.debug = False
+        b = QtWidgets.QPushButton('Push Me')
+        b.height=60
+        b.setToolTip('This is an example button')
+        b.clicked.connect(lambda: self.onClick("hello"))
 
-        self.updateClipboard()
+        h_box = QtWidgets.QHBoxLayout()
+        h_box.addStretch()
+        h_box.addWidget(b, 1)
+        h_box.addStretch()
 
-    def initMenu(self):
-        menubar = Menu(self)
-        optionsMenu = Menu(menubar, tearoff=0)
-        optionsMenu.add_command(label="Clear all (except last)", command=self.clearAllButtons)
-        optionsMenu.add_checkbutton(label="Always on top", command=self.toggleAlwaysOnTop)
-        menubar.add_cascade(label="Options", menu=optionsMenu)
-        self.parent.config(menu=menubar)
+        v_box = QtWidgets.QVBoxLayout()
+        v_box.addLayout(h_box)
 
-    def updateClipboard(self):
+        self.setLayout(v_box)
 
-        try:
-            cliptext = self.clipboard_get()
-            #Handle empty clipboard content
-            if not cliptext:
-                return
 
-            cliptext, cliptextShort = self.cleanClipText(cliptext=cliptext)
-            #Updating screen if new content found
-            if cliptextShort not in self.clipboardContent:
-                self.clipboardContent.add(cliptextShort)
-                self.cleanupOldButtons()
-                Button(self, text=cliptextShort, cursor="plus", wraplength = 500, command=lambda cliptext=cliptext: self.onClick(cliptext)).pack(fill=BOTH)
+        # Add text field
+        # self.b = QPlainTextEdit(self)
+        # self.b.insertPlainText("Use your mouse to copy text to the clipboard.\nText can be copied from any application.\n")
+        # self.b.move(10,10)
+        # self.b.resize(400,200)
+        #
+        # QApplication.clipboard().dataChanged.connect(self.clipboardChanged)
 
-                self.update()
-                self.parent.update()
-                self.pack()
-                self.lift()
-                self.parent.lift()
+    # Get the system clipboard contents
 
-        except TclError:
-            pass #nothing on clipboard
+    def onClick(self, string):
+        print(string)
+    def clipboardChanged(self):
+        text = QApplication.clipboard().text()
+        print(text)
+        self.b.insertPlainText(text + '\n')
 
-        self.after(ms=self.pollingFrequencyMs, func=self.updateClipboard)
-
-    def cleanupOldButtons(self):
-        #Removing the oldest entry
-        allButtons = self.getAllButtons()
-        if self.debug:
-            print([button["text"] for button in allButtons])
-        if len(allButtons) == self.maxClippingsOnApp:
-            self.clipboardContent.discard(allButtons[0].cget("text"))
-            if self.debug:
-                print(self.clipboardContent)
-            allButtons[0].destroy()
-
-    def cleanClipText(self, cliptext):
-        #Removing all characters > 65535 (that's the range for tkinter)
-        cliptext = "".join([c for c in cliptext if ord(c) <= 65535])
-        #Clipping content to loop pretty
-        if len(cliptext) > self.truncateTextLength:
-            cliptextShort = cliptext[:self.truncateTextLength]+" ..."
-        else:
-            cliptextShort = cliptext
-        #Removing new lines from short text
-        cliptextShort = cliptextShort.replace("\n", "").strip()
-        return (cliptext, cliptextShort)
-
-    def onClick(self, cliptext):
-        if self.debug:
-            print("copied ", cliptext)
-        self.clipboard_clear()
-        self.clipboard_append(cliptext)
-
-    def getAllButtons(self):
-        return [button for button in self.children.values() if isinstance(button, Button)]
-
-    def clearAllButtons(self):
-        allButtons = self.getAllButtons()
-        for button in allButtons:
-            button.destroy()
-        self.clipboardContent = set()
-        #self.clipboard_clear()
-
-    def toggleAlwaysOnTop(self):
-        if self.parent.attributes("-topmost") == 0:
-            self.parent.attributes("-topmost", 1)
-        else:
-            self.parent.attributes("-topmost", 0)
-
-if __name__ == '__main__':
-    root = Tk()
-    Clippy(root).mainloop()
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    root = Clippy()
+    root.show()
+    sys.exit(app.exec_())
