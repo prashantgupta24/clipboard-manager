@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Button, BOTH, Menu, TclError, Label, RAISED, StringVar
+from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, StringVar, SUNKEN
 
 class Clippy(Frame):
     def __init__(self, parent=None):
@@ -19,31 +19,24 @@ class Clippy(Frame):
         self.debug = False
 
         self.createLayout()
-
         self.updateClipboard()
 
     def initMenu(self):
         menubar = Menu(self)
         optionsMenu = Menu(menubar, tearoff=0)
-        optionsMenu.add_command(label="Clear all (except last)", command=self.clearAllButtons)
+        optionsMenu.add_command(label="Clear all (except last)", command=self.clearAll)
         optionsMenu.add_checkbutton(label="Always on top", command=self.toggleAlwaysOnTop)
         menubar.add_cascade(label="Options", menu=optionsMenu)
         self.parent.config(menu=menubar)
 
     def createLayout(self):
-
         for i in range(self.maxClippingsOnApp):
-            # var = StringVar()
-            # var.set('ddd')
-            # self.labelVar.append(var)
-            # self.var = var
             l = Label(self, text="", cursor="plus", relief=RAISED, pady=5,  wraplength=500)
             l.pack(fill=BOTH, padx=5, pady=2, expand=1)
             l.bind("<Button-1>", lambda e, labelNum=i: self.onClick(labelNum))
             self.labelArray.append(l)
 
     def updateClipboard(self):
-
         try:
             cliptext = self.clipboard_get()
             #Handle empty clipboard content
@@ -53,16 +46,16 @@ class Clippy(Frame):
             cliptext, cliptextShort = self.cleanClipText(cliptext=cliptext)
             #Updating screen if new content found
             if cliptextShort not in self.clipboardContent:
+                #print(cliptextShort)
                 self.clipboardContent.add(cliptextShort)
+
                 if self.labelIterVal == self.maxClippingsOnApp:
                     self.labelIterVal = 0
-                #self.cleanupOldButtons()
-                #Label(self, text=cliptextShort, cursor="plus", relief=RAISED, pady=5,  wraplength=500).pack(fill=BOTH, expand=1)
-            #, command=lambda cliptext=cliptext: self.onClick(cliptext)
 
-                # var = StringVar()
-                # var.set(cliptextShort)
                 label = self.labelArray[self.labelIterVal]
+                labelText = label["text"]
+                if labelText in self.clipboardContent:
+                    self.clipboardContent.discard(labelText)
                 label["text"] = cliptextShort
                 self.labelIterVal += 1
 
@@ -77,17 +70,6 @@ class Clippy(Frame):
 
         self.after(ms=self.pollingFrequencyMs, func=self.updateClipboard)
 
-    def cleanupOldButtons(self):
-        #Removing the oldest entry
-        allButtons = self.getAllButtons()
-        if self.debug:
-            print([button["text"] for button in allButtons])
-        if len(allButtons) == self.maxClippingsOnApp:
-            self.clipboardContent.discard(allButtons[0].cget("text"))
-            if self.debug:
-                print(self.clipboardContent)
-            allButtons[0].destroy()
-
     def cleanClipText(self, cliptext):
         #Removing all characters > 65535 (that's the range for tkinter)
         cliptext = "".join([c for c in cliptext if ord(c) <= 65535])
@@ -101,22 +83,21 @@ class Clippy(Frame):
         return (cliptext, cliptextShort)
 
     def onClick(self, labelNum):
-        #if self.debug:
-        print(labelNum)
         label = self.labelArray[labelNum]
-        print("copied ", label["text"])
-        # self.clipboard_clear()
-        # self.clipboard_append(cliptext)
+        if self.debug:
+            print("copied ", label["text"])
+        self.clipboard_clear()
+        self.clipboard_append(label["text"])
+        label["relief"] = SUNKEN
+        self.after(ms=100, func=lambda label=label: self.animateClick(label))
 
-    def getAllButtons(self):
-        return [button for button in self.children.values() if isinstance(button, Button)]
+    def animateClick(self, label):
+        label["relief"] = RAISED
 
-    def clearAllButtons(self):
-        allButtons = self.getAllButtons()
-        for button in allButtons:
-            button.destroy()
+    def clearAll(self):
+        for label in range(self.labelArray):
+            label["text"] = ""
         self.clipboardContent = set()
-        #self.clipboard_clear()
 
     def toggleAlwaysOnTop(self):
         if self.parent.attributes("-topmost") == 0:
