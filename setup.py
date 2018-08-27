@@ -12,7 +12,9 @@ with open("README.md", "r") as fh:
 
 APP = ['clippy.py']
 DATA_FILES = []
-OPTIONS = {}
+OPTIONS = {
+    'iconfile': 'clipboard.icns'
+}
 
 setup(
     name="clippy",
