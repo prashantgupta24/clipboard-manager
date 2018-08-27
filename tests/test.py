@@ -18,17 +18,11 @@ class TestClippy(unittest.TestCase):
     def testCleanClipText(self):
         for cliptext, expectedVal in self.cliptextArr.items():
             self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext=cliptext), expectedVal)
-        # self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="hello"), ("hello", "hello"))
-        # self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="h" + chr(120000)), ("h", "h"))
-        # self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="a"*(self.ClippyTestClass.truncateTextLength+1)), ("a"*(self.ClippyTestClass.truncateTextLength+1), "a"*self.ClippyTestClass.truncateTextLength+" ..."))
-        # self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="abc\nde\nf"), ("abc\nde\nf", "abcdef"))
-        # self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="hello   "), ("hello   ", "hello"))
-        # self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="  hello"), ("  hello", "hello"))
+        #invalid cases
         self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext="  "), ("  ", ""))
         self.assertEqual(self.ClippyTestClass.cleanClipText(cliptext=" \n \n \n"), (" \n \n \n", ""))
 
     def testProcessClipping(self):
-        #cliptextArr=["hello", "This is a random string", "h" + chr(120000), "a"*(self.ClippyTestClass.truncateTextLength+1)]
         i = 0
         for cliptext in self.cliptextArr.keys():
             cliptext, cliptextShort = self.ClippyTestClass.cleanClipText(cliptext=cliptext)
@@ -42,7 +36,6 @@ class TestClippy(unittest.TestCase):
             i+=1
 
     def testOnClickFunction(self):
-        #cliptextArr=["hello", "This is a random string", "h" + chr(120000), "a"*(self.ClippyTestClass.truncateTextLength+1)]
         i = 0
         for cliptext in self.cliptextArr.keys():
             cliptext, _ = self.ClippyTestClass.cleanClipText(cliptext=cliptext)
