@@ -1,2 +1,5 @@
 dist
 build
+random_tests.py
+__pycache__
+*.egg-info

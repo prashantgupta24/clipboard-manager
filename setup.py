@@ -7,13 +7,31 @@ Usage:
 
 from setuptools import setup
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 APP = ['clippy.py']
 DATA_FILES = []
 OPTIONS = {}
 
 setup(
+    name="clippy",
+    version="0.0.1",
+    author="Prashant Gupta",
+    author_email="prashantgupta24@gmail.com",
+    description="Clipboard manager using tkinter",
+    long_description=long_description,
+    url="https://github.com/prashantgupta24/clipboard-manager",
+    keywords=['clipboard', 'clipboard-manager'],
     app=APP,
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
+    test_suite='tests',
+    license='MIT',
+    classifiers=(
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ),
 )

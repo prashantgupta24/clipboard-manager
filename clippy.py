@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, StringVar, SUNKEN
+from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, SUNKEN
 
 class Clippy(Frame):
     def __init__(self, parent=None):
@@ -18,7 +18,6 @@ class Clippy(Frame):
 
         self.initMenu()
         self.createLayout()
-        self.updateClipboard()
 
     def initDefaultValues(self):
         self.clipboardContent = set()
@@ -43,32 +42,7 @@ class Clippy(Frame):
     def updateClipboard(self):
         try:
             cliptext = self.clipboard_get()
-            if self.debug:
-                print("Called function, got ->", cliptext)
-
-            cliptext, cliptextShort = self.cleanClipText(cliptext=cliptext)
-            #Updating screen if new content found
-            if cliptext not in self.clipboardContent and cliptextShort:
-
-                self.clipboardContent.add(cliptext)
-                self.clipboardContentMapping[cliptextShort] = cliptext
-
-                if self.labelIterVal == self.maxClippingsOnApp:
-                    self.labelIterVal = 0
-
-                label = self.labelArray[self.labelIterVal]
-                labelText = label["text"]
-                if labelText in self.clipboardContentMapping:
-                    self.clipboardContent.discard(self.clipboardContentMapping[labelText])
-                    self.clipboardContentMapping.pop(labelText)
-                label["text"] = cliptextShort
-                self.labelIterVal += 1
-
-                self.update()
-                self.parent.update()
-                self.pack()
-                self.lift()
-                self.parent.lift()
+            self.processClipping(cliptext=cliptext)
 
         except TclError:
             pass #nothing on clipboard
@@ -80,8 +54,36 @@ class Clippy(Frame):
         else:
             self.after(ms=self.pollingFrequencyMs, func=self.updateClipboard)
 
+    def processClipping(self, cliptext):
+        if self.debug:
+            print("Called function, got ->", cliptext)
+
+        cliptext, cliptextShort = self.cleanClipText(cliptext=cliptext)
+        #Updating screen if new content found
+        if cliptext not in self.clipboardContent and cliptextShort:
+
+            self.clipboardContent.add(cliptext)
+            self.clipboardContentMapping[cliptextShort] = cliptext
+
+            if self.labelIterVal == self.maxClippingsOnApp:
+                self.labelIterVal = 0
+
+            label = self.labelArray[self.labelIterVal]
+            labelText = label["text"]
+            if labelText in self.clipboardContentMapping:
+                self.clipboardContent.discard(self.clipboardContentMapping[labelText])
+                self.clipboardContentMapping.pop(labelText)
+            label["text"] = cliptextShort
+            self.labelIterVal += 1
+
+            self.update()
+            self.parent.update()
+            self.pack()
+            self.lift()
+            self.parent.lift()
+
     def cleanClipText(self, cliptext):
-        #Removing all characters > 65535 (that's the range for tkinter)
+        #Removing all characters > 65535 (that's the range for tcl)
         cliptext = "".join([c for c in cliptext if ord(c) <= 65535])
         #Clipping content to loop pretty
         if len(cliptext) > self.truncateTextLength:
@@ -119,4 +121,6 @@ class Clippy(Frame):
 
 if __name__ == '__main__':
     root = Tk()
-    Clippy(root).mainloop()
+    Clippy = Clippy(root)
+    Clippy.updateClipboard()
+    Clippy.mainloop()
