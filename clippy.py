@@ -39,7 +39,7 @@ class Clippy(Frame):
             l.bind("<Button-1>", lambda e, labelNum=i: self.onClick(labelNum))
             self.labelArray.append({
                 "label": l,
-                "text":l["text"],
+                "text": "", #only for debugging purposes, only label["text"] matters
                 "clickCount": 0,
                 "updated": 0,
             })
@@ -72,22 +72,23 @@ class Clippy(Frame):
 
             if cliptextShort not in self.clipboardContentMapping: #new clipping altogether
                 self.labelUpdateVal += 1
-                sortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
-                sortByClicked = sorted(sortByUpdated, key=lambda t:t["clickCount"])
-                #print(sortByClicked)
+                labelArrsortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
+                labelArrsortByClicked = sorted(labelArrsortByUpdated, key=lambda t:t["clickCount"])
+                #print(labelArrsortByClicked)
                 #print()
-                label = sortByClicked[0]["label"]
+                labelElem = labelArrsortByClicked[0]
+                label = labelElem["label"]
                 labelText = label["text"]
                 if labelText in self.clipboardContentMapping:
                     self.clipboardContent.discard(self.clipboardContentMapping[labelText])
                     self.clipboardContentMapping.pop(labelText)
                 label["text"] = cliptextShort
-                sortByClicked[0]["updated"] = self.labelUpdateVal
-                sortByClicked[0]["text"] = cliptextShort
-                sortByClicked[0]["clickCount"] = 0
-                # sortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
-                # sortByClicked = sorted(sortByUpdated, key=lambda t:t["clickCount"])
-                # print(sortByClicked)
+                labelElem["updated"] = self.labelUpdateVal
+                labelElem["text"] = cliptextShort
+                labelElem["clickCount"] = 0
+                # labelArrsortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
+                # labelArrsortByClicked = sorted(labelArrsortByUpdated, key=lambda t:t["clickCount"])
+                # print(labelArrsortByClicked)
                 # print()
             else: # New clipping but shortened version is the same, so discard previous value
                 self.clipboardContent.discard(self.clipboardContentMapping[cliptextShort])
@@ -114,7 +115,8 @@ class Clippy(Frame):
         return (cliptext, cliptextShort)
 
     def onClick(self, labelNum):
-        label = self.labelArray[labelNum]["label"]
+        labelElem = self.labelArray[labelNum]
+        label = labelElem["label"]
         if label["text"] == "":
             return
         if self.debug:
@@ -122,15 +124,18 @@ class Clippy(Frame):
         self.clipboard_clear()
         self.clipboard_append(self.clipboardContentMapping[label["text"]])
         label["relief"] = SUNKEN
-        self.labelArray[labelNum]["clickCount"] = self.labelArray[labelNum]["clickCount"] + 1
+        labelElem["clickCount"] = labelElem["clickCount"] + 1
         self.after(ms=100, func=lambda label=label: self.animateClick(label))
 
     def animateClick(self, label):
         label["relief"] = RAISED
 
     def clearAll(self):
-        for label in self.labelArray:
-            label["text"] = ""
+        for labelElem in self.labelArray:
+            labelElem["label"]["text"] = ""
+            labelElem["text"] = ""
+            labelElem["clickCount"] = 0
+            labelElem["updated"] = 0
         self.initDefaultValues()
 
     def toggleAlwaysOnTop(self):
