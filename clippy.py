@@ -17,7 +17,6 @@ class Clippy(Frame):
         self.debug = False
 
         self.initMenu()
-        self.createLayout()
 
     def initDefaultValues(self):
         self.clipboardContent = set()
@@ -67,15 +66,11 @@ class Clippy(Frame):
         #Updating screen if new content found
         if cliptext not in self.clipboardContent and cliptextShort:
 
-            # if self.labelUpdateVal == self.maxClippingsOnApp:
-            #     self.labelUpdateVal = 0
-
             if cliptextShort not in self.clipboardContentMapping: #new clipping altogether
                 self.labelUpdateVal += 1
                 labelArrsortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
                 labelArrsortByClicked = sorted(labelArrsortByUpdated, key=lambda t:t["clickCount"])
-                #print(labelArrsortByClicked)
-                #print()
+
                 labelElem = labelArrsortByClicked[0]
                 label = labelElem["label"]
                 labelText = label["text"]
@@ -86,10 +81,6 @@ class Clippy(Frame):
                 labelElem["updated"] = self.labelUpdateVal
                 labelElem["text"] = cliptextShort
                 labelElem["clickCount"] = 0
-                # labelArrsortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
-                # labelArrsortByClicked = sorted(labelArrsortByUpdated, key=lambda t:t["clickCount"])
-                # print(labelArrsortByClicked)
-                # print()
             else: # New clipping but shortened version is the same, so discard previous value
                 self.clipboardContent.discard(self.clipboardContentMapping[cliptextShort])
 
@@ -99,8 +90,8 @@ class Clippy(Frame):
             self.update()
             self.parent.update()
             self.pack()
-            self.lift()
-            self.parent.lift()
+            # self.lift()
+            # self.parent.lift()
 
     def cleanClipText(self, cliptext):
         #Removing all characters > 65535 (that's the range for tcl)
@@ -120,6 +111,7 @@ class Clippy(Frame):
         if label["text"] == "":
             return
         if self.debug:
+            print(labelElem)
             print("copied ", self.clipboardContentMapping[label["text"]])
         self.clipboard_clear()
         self.clipboard_append(self.clipboardContentMapping[label["text"]])
@@ -147,5 +139,6 @@ class Clippy(Frame):
 if __name__ == '__main__':
     root = Tk()
     Clippy = Clippy(root)
+    Clippy.createLayout()
     Clippy.updateClipboard()
     Clippy.mainloop()
