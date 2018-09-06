@@ -17,12 +17,11 @@ class Clippy(Frame):
         self.debug = False
 
         self.initMenu()
-        self.createLayout()
 
     def initDefaultValues(self):
         self.clipboardContent = set()
         self.clipboardContentMapping = {}
-        self.labelIterVal = 0
+        self.labelUpdateVal = 0
 
     def initMenu(self):
         menubar = Menu(self)
@@ -37,7 +36,12 @@ class Clippy(Frame):
             l = Label(self, text="", cursor="plus", relief=RAISED, pady=5,  wraplength=500)
             l.pack(fill=BOTH, padx=5, pady=2, expand=1)
             l.bind("<Button-1>", lambda e, labelNum=i: self.onClick(labelNum))
-            self.labelArray.append(l)
+            self.labelArray.append({
+                "label": l,
+                "text": "", #only for debugging purposes, only label["text"] matters
+                "clickCount": 0,
+                "updated": 0,
+            })
 
     def updateClipboard(self):
         try:
@@ -62,25 +66,32 @@ class Clippy(Frame):
         #Updating screen if new content found
         if cliptext not in self.clipboardContent and cliptextShort:
 
+            if cliptextShort not in self.clipboardContentMapping: #new clipping altogether
+                self.labelUpdateVal += 1
+                labelArrsortByUpdated = sorted(self.labelArray, key=lambda t:t["updated"])
+                labelArrsortByClicked = sorted(labelArrsortByUpdated, key=lambda t:t["clickCount"])
+
+                labelElem = labelArrsortByClicked[0]
+                label = labelElem["label"]
+                labelText = label["text"]
+                if labelText in self.clipboardContentMapping:
+                    self.clipboardContent.discard(self.clipboardContentMapping[labelText])
+                    self.clipboardContentMapping.pop(labelText)
+                label["text"] = cliptextShort
+                labelElem["updated"] = self.labelUpdateVal
+                labelElem["text"] = cliptextShort
+                labelElem["clickCount"] = 0
+            else: # New clipping but shortened version is the same, so discard previous value
+                self.clipboardContent.discard(self.clipboardContentMapping[cliptextShort])
+
             self.clipboardContent.add(cliptext)
             self.clipboardContentMapping[cliptextShort] = cliptext
-
-            if self.labelIterVal == self.maxClippingsOnApp:
-                self.labelIterVal = 0
-
-            label = self.labelArray[self.labelIterVal]
-            labelText = label["text"]
-            if labelText in self.clipboardContentMapping:
-                self.clipboardContent.discard(self.clipboardContentMapping[labelText])
-                self.clipboardContentMapping.pop(labelText)
-            label["text"] = cliptextShort
-            self.labelIterVal += 1
 
             self.update()
             self.parent.update()
             self.pack()
-            self.lift()
-            self.parent.lift()
+            # self.lift()
+            # self.parent.lift()
 
     def cleanClipText(self, cliptext):
         #Removing all characters > 65535 (that's the range for tcl)
@@ -95,22 +106,28 @@ class Clippy(Frame):
         return (cliptext, cliptextShort)
 
     def onClick(self, labelNum):
-        label = self.labelArray[labelNum]
+        labelElem = self.labelArray[labelNum]
+        label = labelElem["label"]
         if label["text"] == "":
             return
         if self.debug:
+            print(labelElem)
             print("copied ", self.clipboardContentMapping[label["text"]])
         self.clipboard_clear()
         self.clipboard_append(self.clipboardContentMapping[label["text"]])
         label["relief"] = SUNKEN
+        labelElem["clickCount"] = labelElem["clickCount"] + 1
         self.after(ms=100, func=lambda label=label: self.animateClick(label))
 
     def animateClick(self, label):
         label["relief"] = RAISED
 
     def clearAll(self):
-        for label in self.labelArray:
-            label["text"] = ""
+        for labelElem in self.labelArray:
+            labelElem["label"]["text"] = ""
+            labelElem["text"] = ""
+            labelElem["clickCount"] = 0
+            labelElem["updated"] = 0
         self.initDefaultValues()
 
     def toggleAlwaysOnTop(self):
@@ -122,5 +139,6 @@ class Clippy(Frame):
 if __name__ == '__main__':
     root = Tk()
     Clippy = Clippy(root)
+    Clippy.createLayout()
     Clippy.updateClipboard()
     Clippy.mainloop()
