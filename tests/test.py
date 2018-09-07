@@ -59,7 +59,7 @@ class TestClippy(unittest.TestCase):
 
     def testOnClickFunctionLongLoop(self):
         labelsClicked = [random.randint(0, self.ClippyTestClass.maxClippingsOnApp-1), random.randint(0, self.ClippyTestClass.maxClippingsOnApp-1)]
-        print("labelsClicked ", labelsClicked)
+        print("labelsClicked with size", labelsClicked, self.ClippyTestClass.maxClippingsOnApp)
         j = loopVal = 0
         for i in range(self.longLoopIterationVal):
             cliptext = "cliptext - " + str(i)
