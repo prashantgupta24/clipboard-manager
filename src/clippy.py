@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, SUNKEN
+from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, SUNKEN, SOLID
 
 class Clippy(Frame):
     def __init__(self, parent=None):
@@ -78,6 +78,7 @@ class Clippy(Frame):
                     self.clipboardContent.discard(self.clipboardContentMapping[labelText])
                     self.clipboardContentMapping.pop(labelText)
                 label["text"] = cliptextShort
+                label["relief"] = RAISED
                 labelElem["updated"] = self.labelUpdateVal
                 labelElem["text"] = cliptextShort
                 labelElem["clickCount"] = 0
@@ -90,6 +91,7 @@ class Clippy(Frame):
             self.update()
             self.parent.update()
             self.pack()
+            # Following commands can bring focus to the app on each update, but it was not very desirable
             # self.lift()
             # self.parent.lift()
 
@@ -120,11 +122,12 @@ class Clippy(Frame):
         self.after(ms=100, func=lambda label=label: self.animateClick(label))
 
     def animateClick(self, label):
-        label["relief"] = RAISED
+        label["relief"] = SOLID
 
     def clearAll(self):
         for labelElem in self.labelArray:
             labelElem["label"]["text"] = ""
+            labelElem["label"]["relief"] = RAISED
             labelElem["text"] = ""
             labelElem["clickCount"] = 0
             labelElem["updated"] = 0
