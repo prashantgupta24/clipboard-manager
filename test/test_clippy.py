@@ -2,7 +2,7 @@ import time
 import random
 import unittest
 
-import clippy
+from src import clippy
 
 class TestClippy(unittest.TestCase):
 
@@ -86,7 +86,6 @@ class TestClippy(unittest.TestCase):
         for cliptext in self.cliptextArr.keys():
             cliptext, _ = self.ClippyTestClass.cleanClipText(cliptext=cliptext)
             self.ClippyTestClass.processClipping(cliptext=cliptext)
-            self.ClippyTestClass.clipboard_clear()
             self.ClippyTestClass.onClick(i % self.ClippyTestClass.maxClippingsOnApp)
             #print("CLIPBOARD ->", self.ClippyTestClass.clipboard_get())
             # print([label["text"] for label in self.ClippyTestClass.labelArray])
@@ -98,7 +97,6 @@ class TestClippy(unittest.TestCase):
             labelIterator = i % self.ClippyTestClass.maxClippingsOnApp
             cliptext = "cliptext - " + str(labelIterator)
             self.ClippyTestClass.processClipping(cliptext=cliptext)
-            self.ClippyTestClass.clipboard_clear()
             self.ClippyTestClass.onClick(labelIterator)
             labelElem = self.ClippyTestClass.labelArray[labelIterator]
 

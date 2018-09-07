@@ -91,6 +91,7 @@ class Clippy(Frame):
             self.update()
             self.parent.update()
             self.pack()
+            # Following commands can bring focus to the app on each update, but it was not very desirable
             # self.lift()
             # self.parent.lift()
 

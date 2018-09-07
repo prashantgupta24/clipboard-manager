@@ -10,7 +10,7 @@ from setuptools import setup
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-APP = ['clippy.py']
+APP = ['src/clippy.py']
 DATA_FILES = []
 OPTIONS = {
     'iconfile': 'clipboard.icns'
