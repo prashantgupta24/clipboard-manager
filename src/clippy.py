@@ -118,7 +118,7 @@ class Clippy(Frame):
         self.clipboard_clear()
         self.clipboard_append(self.clipboardContentMapping[label["text"]])
         label["relief"] = SUNKEN
-        labelElem["clickCount"] = labelElem["clickCount"] + 1
+        labelElem["clickCount"] = 1
         self.after(ms=100, func=lambda label=label: self.animateClick(label))
 
     def animateClick(self, label):

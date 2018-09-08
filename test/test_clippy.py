@@ -68,8 +68,8 @@ class TestClippy(unittest.TestCase):
                 self.ClippyTestClass.onClick(i)
 
             if i >= self.ClippyTestClass.maxClippingsOnApp:
-                j = (i + loopVal) % self.ClippyTestClass.maxClippingsOnApp
-                while j in labelsClicked:
+                j = (i + loopVal)
+                while j % self.ClippyTestClass.maxClippingsOnApp in labelsClicked:
                     j += 1
                     loopVal += 1
             else:
@@ -102,6 +102,6 @@ class TestClippy(unittest.TestCase):
 
             self.assertEqual(self.ClippyTestClass.clipboard_get(), cliptext, "Clipboard content not matching")
             self.assertEqual(labelElem["label"]["text"], cliptext, "Label not created correctly")
-            self.assertEqual(labelElem["clickCount"], int(i/self.ClippyTestClass.maxClippingsOnApp) + 1, "Label click count not proper")
+            self.assertEqual(labelElem["clickCount"], 1, "Label click count not proper")
             self.assertEqual(labelElem["updated"], labelIterator+1, "Update value for label not set correctly")
             #time.sleep(0.1)
