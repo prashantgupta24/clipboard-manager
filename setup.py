@@ -29,7 +29,7 @@ setup(
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
-    test_suite='tests',
+    test_suite='test',
     license='MIT',
     classifiers=(
         "Programming Language :: Python :: 3",
