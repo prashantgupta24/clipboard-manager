@@ -1,4 +1,5 @@
 from tkinter import Tk
+import pyperclip
 
 import clippy
 
@@ -13,12 +14,13 @@ class TestClippyVisual():
         self.ClippyTestClass.maxClippingsOnApp = 5
         self.ClippyTestClass.createLayout()
         self.testClippyVisual()
+        self.ClippyTestClass.updateClipboard()
         self.ClippyTestClass.mainloop()
 
     def testClippyVisual(self):
-        cliptext = "cliptext-" + str(self.iterVal%5)
+        cliptext = "cliptext-" + str(self.iterVal)
         self.iterVal += 1
-        self.ClippyTestClass.processClipping(cliptext)
+        pyperclip.copy(cliptext)
         print("sent to clippy -> ", cliptext)
         if self.debug:
             print("*"*100)
