@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, SUNKEN, SOLID
+from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, SUNKEN, SOLID, messagebox
 import pyperclip
 
 class Clippy(Frame):
@@ -128,13 +128,15 @@ class Clippy(Frame):
         label["relief"] = SOLID
 
     def clearAll(self):
-        for labelElem in self.labelArray:
-            labelElem["label"]["text"] = ""
-            labelElem["label"]["relief"] = RAISED
-            labelElem["text"] = ""
-            labelElem["clickCount"] = 0
-            labelElem["updated"] = 0
-        self.initDefaultValues()
+        result = messagebox.askyesno("Clear All", "Are you sure you want to clear all clippings from the application?", icon='warning')
+        if result:
+            for labelElem in self.labelArray:
+                labelElem["label"]["text"] = ""
+                labelElem["label"]["relief"] = RAISED
+                labelElem["text"] = ""
+                labelElem["clickCount"] = 0
+                labelElem["updated"] = 0
+            self.initDefaultValues()
 
     def toggleAlwaysOnTop(self):
         if self.parent.attributes("-topmost") == 0:
