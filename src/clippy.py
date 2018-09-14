@@ -1,4 +1,5 @@
 from tkinter import Tk, Frame, BOTH, Menu, TclError, Label, RAISED, SUNKEN, SOLID
+import pyperclip
 
 class Clippy(Frame):
     def __init__(self, parent=None):
@@ -45,7 +46,8 @@ class Clippy(Frame):
 
     def updateClipboard(self):
         try:
-            cliptext = self.clipboard_get()
+            #cliptext = self.clipboard_get()
+            cliptext = pyperclip.paste()
             self.processClipping(cliptext=cliptext)
 
         except TclError:
@@ -115,8 +117,9 @@ class Clippy(Frame):
         if self.debug:
             print(labelElem)
             print("copied ", self.clipboardContentMapping[label["text"]])
-        self.clipboard_clear()
-        self.clipboard_append(self.clipboardContentMapping[label["text"]])
+        # self.clipboard_clear()
+        # self.clipboard_append(self.clipboardContentMapping[label["text"]])
+        pyperclip.copy(self.clipboardContentMapping[label["text"]])
         label["relief"] = SUNKEN
         labelElem["clickCount"] = 1
         self.after(ms=100, func=lambda label=label: self.animateClick(label))
