@@ -1,4 +1,4 @@
-# A clipboard manager in python, built using `tkinter` and `pyperclip`
+# A clipboard manager in python, built using tkinter and pyperclip
 
 ## Demo
 
