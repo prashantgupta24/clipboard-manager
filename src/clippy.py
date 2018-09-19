@@ -50,8 +50,6 @@ class Clippy(Frame):
             cliptext = pyperclip.paste()
             self.processClipping(cliptext=cliptext)
 
-        except TclError:
-            pass #nothing on clipboard
         except Exception as e:
             print("ERROR!! -> ", e)
 
@@ -100,7 +98,7 @@ class Clippy(Frame):
     def cleanClipText(self, cliptext):
         #Removing all characters > 65535 (that's the range for tcl)
         cliptext = "".join([c for c in cliptext if ord(c) <= 65535])
-        #Clipping content to loop pretty
+        #Clipping content to look pretty
         if len(cliptext) > self.truncateTextLength:
             cliptextShort = cliptext[:self.truncateTextLength]+" ..."
         else:
