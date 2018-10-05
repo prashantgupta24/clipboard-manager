@@ -1,3 +1,9 @@
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+
+
+![GitHub release](https://img.shields.io/github/release/prashantgupta24/clipboard-manager.svg)
+
+
 # A clipboard manager in python, built using tkinter and pyperclip
 
 ## Demo
@@ -7,6 +13,7 @@
 ## How to run Clippy
 
 - Clone the repo
+- Use [virtualenv](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv) to create a virtual env with `python>=3.6`
 - Run `python setup.py install` (it will install all the required dependencies)
 - Run `python src/clippy.py`
 
