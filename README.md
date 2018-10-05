@@ -1,8 +1,7 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 
-![GitHub release](https://img.shields.io/github/release/prashantgupta24/clipboard-manager.svg)
-
+[![version][version-badge]][RELEASES]
 
 # A clipboard manager in python, built using tkinter and pyperclip
 
@@ -32,3 +31,7 @@ To make the standalone app, just run:
 It will create the `.app` file under the `dist` folder, which you can copy to your `Applications` folder in your Mac, and open `Clippy` just like any other application!
 
 > Note: If you are using macOS 10.7 or later, the Apple-supplied Tcl/Tk 8.5 still has serious bugs that can cause application crashes while using `py2app`. If you wish to use IDLE or Tkinter, install and use a newer version of Python and of Tcl/Tk. Use [this](https://www.tcl.tk/doc/howto/compile.html) link to update.
+
+
+[version-badge]: https://img.shields.io/github/release/prashantgupta24/clipboard-manager.svg
+[RELEASES]: https://github.com/prashantgupta24/clipboard-manager/releases
