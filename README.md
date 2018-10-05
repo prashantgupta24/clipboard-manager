@@ -9,6 +9,10 @@
 
 ![](https://github.com/prashantgupta24/clipboard-manager/blob/master/clippy-demo.gif)
 
+## Step by step explanation
+
+I have published an article on Medium [here](https://medium.com/@prashantgupta24/how-to-create-your-own-clipboard-manager-using-python-and-tkinter-e693aa27fffc) which goes through all aspects of this application.
+
 ## How to run Clippy
 
 - Clone the repo
