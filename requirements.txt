@@ -1,0 +1,2 @@
+py2app==0.13
+pyperclip==1.6.4
